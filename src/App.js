@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './App.css';
-import Todotable from './Components/TodoTable';
+//import Todotable from './Components/TodoTable';
 import Todolist from './Components/TodoList';
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
 
 function App() {
   const [todo, setTodo] = useState({desc: '', date: ''});
@@ -13,12 +15,30 @@ function App() {
 
   const handleClick = (event) => {
     event.preventDefault();
-    setTodos([...todos, todo]);//add a new value at the end of the array
+    setTodos([...todos, todo]);
   }
 
-  const handleDelete = (index) => {
-    setTodos(todos.filter(i => i !== index));
+  const handleDelete = (event) => {
+    event.preventDefault();
+    setTodos(todos.filter((todo, index) => index !== parseInt(event.target.id)));
   }
+
+  const columns = [
+    {
+        Header: 'Date',
+        accessor: 'date'
+    },
+    {
+        Header: 'Descripton',
+        accessor: 'desc'
+    },
+    {
+      Cell: ({index}) => <button id={index} onClick={handleDelete}>Delete</button>,
+      filterable: false,
+      sortable: false,
+      width: 120
+    }
+]
 
   return (
     <div className="App">
@@ -28,7 +48,7 @@ function App() {
       <p></p>
       <Todolist todo={todo} todos={todos} handleChange={handleChange} handleClick={handleClick}/>
       <p></p>
-      <Todotable todos={todos} handleDelete={handleDelete}/>
+      <ReactTable data={todos} columns={columns} filterable={true}/>
     </div>
   );
 }
